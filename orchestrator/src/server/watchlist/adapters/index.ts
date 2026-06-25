@@ -1,9 +1,14 @@
 import type { WatchedSourceType } from "@shared/types";
 import { bamboohrWatchlistAdapter } from "./bamboohr";
+import { personioWatchlistAdapter } from "./personio";
 import type { WatchlistCatalogSourceAdapter } from "./types";
 import { workdayWatchlistAdapter } from "./workday";
 
-const adapters = [workdayWatchlistAdapter, bamboohrWatchlistAdapter] as const;
+const adapters = [
+  workdayWatchlistAdapter,
+  bamboohrWatchlistAdapter,
+  personioWatchlistAdapter,
+] as const;
 
 const adaptersByType = new Map<
   WatchedSourceType,
