@@ -103,6 +103,19 @@ describe("parsePersonioFeed", () => {
     expect(job.jobDescriptionHtml).toContain("<h3>Section Heading</h3>");
   });
 
+  it("decodes numeric and hex HTML entities in scalar fields", () => {
+    const xml = `<workzag-jobs>
+<position>
+    <id>7</id>
+    <office>M&#252;nster</office>
+    <name>Caf&#233; Manager &#x2014; Team Lead</name>
+</position>
+</workzag-jobs>`;
+    const [job] = parsePersonioFeed(xml, SOURCE);
+    expect(job.title).toBe("Café Manager — Team Lead");
+    expect(job.locationText).toBe("Münster");
+  });
+
   it("throws when a non-empty feed yields zero parseable positions", () => {
     const xml = `<workzag-jobs><position><name>No Id</name></position></workzag-jobs>`;
     expect(() => parsePersonioFeed(xml, SOURCE)).toThrow();
