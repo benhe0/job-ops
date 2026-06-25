@@ -19,6 +19,8 @@
       "@shared/*": ["../shared/src/*"],
       "@career-boards/bamboohr": ["../career-boards/bamboohr/src/index.ts"],
       "@career-boards/bamboohr/*": ["../career-boards/bamboohr/src/*"],
+      "@career-boards/personio": ["../career-boards/personio/src/index.ts"],
+      "@career-boards/personio/*": ["../career-boards/personio/src/*"],
       "@career-boards/workday": ["../career-boards/workday/src/index.ts"],
       "@career-boards/workday/*": ["../career-boards/workday/src/*"]
     }
