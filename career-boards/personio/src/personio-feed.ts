@@ -95,8 +95,9 @@ function normalizePosition(
   position: string,
   source: PersonioSourceConfig,
 ): NormalizedPersonioJob | null {
-  const externalId = getTagText(position, "id");
-  const title = getTagText(position, "name");
+  const scalars = stripSubtree(position, "jobDescriptions");
+  const externalId = getTagText(scalars, "id");
+  const title = getTagText(scalars, "name");
   if (!externalId || !title) return null;
 
   const descriptionHtml = buildDescriptionHtml(position);
@@ -106,15 +107,22 @@ function normalizePosition(
     externalId,
     title,
     jobUrl: personioUrlToJobUrl(source.canonicalCareersUrl, externalId),
-    locationText: buildLocationText(position),
-    department: getTagText(position, "department"),
-    employmentType: getTagText(position, "employmentType"),
-    schedule: getTagText(position, "schedule"),
-    seniority: getTagText(position, "seniority"),
-    postedOn: getTagText(position, "createdAt"),
+    locationText: buildLocationText(scalars),
+    department: getTagText(scalars, "department"),
+    employmentType: getTagText(scalars, "employmentType"),
+    schedule: getTagText(scalars, "schedule"),
+    seniority: getTagText(scalars, "seniority"),
+    postedOn: getTagText(scalars, "createdAt"),
     jobDescriptionHtml: descriptionHtml,
     jobDescriptionText: htmlToText(descriptionHtml),
   };
+}
+
+function stripSubtree(source: string, tag: string): string {
+  return source.replace(
+    new RegExp(`<${tag}(?:\\s[^>]*)?>[\\s\\S]*?</${tag}>`, "g"),
+    "",
+  );
 }
 
 function buildLocationText(position: string): string | undefined {
@@ -171,7 +179,7 @@ function getCdataOrText(source: string, tag: string): string {
 }
 
 function stripCdata(value: string): string {
-  const cdata = /^\s*<!\[CDATA\[([\s\S]*?)\]\]>\s*$/.exec(value);
+  const cdata = /^\s*<!\[CDATA\[([\s\S]*)\]\]>\s*$/.exec(value);
   return cdata ? cdata[1] : value;
 }
 

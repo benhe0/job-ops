@@ -84,6 +84,25 @@ describe("parsePersonioFeed", () => {
     expect(jobs[0].externalId).toBe("5");
   });
 
+  it("reads position-level title and id even when jobDescriptions precedes them", () => {
+    const xml = `<workzag-jobs>
+<position>
+    <jobDescriptions>
+        <jobDescription>
+            <name>Section Heading</name>
+            <value><![CDATA[<p>Body</p>]]></value>
+        </jobDescription>
+    </jobDescriptions>
+    <id>9001</id>
+    <name>Real Title</name>
+</position>
+</workzag-jobs>`;
+    const [job] = parsePersonioFeed(xml, SOURCE);
+    expect(job.title).toBe("Real Title");
+    expect(job.externalId).toBe("9001");
+    expect(job.jobDescriptionHtml).toContain("<h3>Section Heading</h3>");
+  });
+
   it("throws when a non-empty feed yields zero parseable positions", () => {
     const xml = `<workzag-jobs><position><name>No Id</name></position></workzag-jobs>`;
     expect(() => parsePersonioFeed(xml, SOURCE)).toThrow();
