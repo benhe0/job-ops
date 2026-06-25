@@ -24,11 +24,7 @@ export class PersonioUrlParseError extends Error {
   readonly code: PersonioUrlParseErrorCode;
   readonly input: string;
 
-  constructor(
-    code: PersonioUrlParseErrorCode,
-    message: string,
-    input: string,
-  ) {
+  constructor(code: PersonioUrlParseErrorCode, message: string, input: string) {
     super(message);
     this.name = "PersonioUrlParseError";
     this.code = code;

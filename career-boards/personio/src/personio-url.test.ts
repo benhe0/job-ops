@@ -10,7 +10,9 @@ import {
 
 describe("parsePersonioUrl", () => {
   it("canonicalizes a careers URL to the origin and derives the feed URL", () => {
-    expect(parsePersonioUrl("https://syte-gmbh.jobs.personio.com/")).toMatchObject({
+    expect(
+      parsePersonioUrl("https://syte-gmbh.jobs.personio.com/"),
+    ).toMatchObject({
       companySlug: "syte-gmbh",
       canonicalCareersUrl: "https://syte-gmbh.jobs.personio.com",
       feedUrl: "https://syte-gmbh.jobs.personio.com/xml",
@@ -37,9 +39,9 @@ describe("parsePersonioUrl", () => {
     expect(
       personioUrlToCompanyLabel("https://syte-gmbh.jobs.personio.com/"),
     ).toBe("Syte Gmbh");
-    expect(
-      personioUrlToSourceKey("https://syte-gmbh.jobs.personio.com/"),
-    ).toBe("personio:syte-gmbh");
+    expect(personioUrlToSourceKey("https://syte-gmbh.jobs.personio.com/")).toBe(
+      "personio:syte-gmbh",
+    );
   });
 
   it("builds canonical job URLs", () => {

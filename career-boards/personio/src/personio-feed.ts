@@ -154,26 +154,27 @@ function buildDescriptionHtml(position: string): string {
 function extractBlocks(source: string, tag: string): string[] {
   const regex = new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)</${tag}>`, "g");
   const blocks: string[] = [];
-  let match: RegExpExecArray | null;
-  while ((match = regex.exec(source)) !== null) {
+  let match = regex.exec(source);
+  while (match !== null) {
     blocks.push(match[1]);
+    match = regex.exec(source);
   }
   return blocks;
 }
 
 function getTagText(source: string, tag: string): string | undefined {
-  const match = new RegExp(
-    `<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)</${tag}>`,
-  ).exec(source);
+  const match = new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)</${tag}>`).exec(
+    source,
+  );
   if (!match) return undefined;
   const value = stripCdata(match[1]).trim();
   return value.length > 0 ? decodeEntities(value) : undefined;
 }
 
 function getCdataOrText(source: string, tag: string): string {
-  const match = new RegExp(
-    `<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)</${tag}>`,
-  ).exec(source);
+  const match = new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)</${tag}>`).exec(
+    source,
+  );
   if (!match) return "";
   return stripCdata(match[1]).trim();
 }

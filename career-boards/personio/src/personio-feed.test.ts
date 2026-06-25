@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { parsePersonioUrl } from "./personio-url";
 import { getJobsFromFeed, parsePersonioFeed } from "./personio-feed";
+import { parsePersonioUrl } from "./personio-url";
 
 const SOURCE = parsePersonioUrl("https://syte-gmbh.jobs.personio.com/");
 
