@@ -10,7 +10,10 @@ const FIXTURE = `<?xml version="1.0" encoding="UTF-8"?>
     <id>2659296</id>
     <subcompany>syte GmbH</subcompany>
     <office>Remote</office>
-    <additionalOffices>Münster</additionalOffices>
+    <additionalOffices>
+        <office>Münster</office>
+        <office>Hybrid</office>
+    </additionalOffices>
     <department>International Expansion</department>
     <recruitingCategory>Vollzeit</recruitingCategory>
     <name>Country Manager Spain (m/w/d)</name>
@@ -56,7 +59,7 @@ describe("parsePersonioFeed", () => {
       externalId: "2659296",
       title: "Country Manager Spain (m/w/d)",
       jobUrl: "https://syte-gmbh.jobs.personio.com/job/2659296",
-      locationText: "Remote, Münster",
+      locationText: "Remote, Münster, Hybrid",
       department: "International Expansion",
       employmentType: "permanent",
       schedule: "full-time",
@@ -119,6 +122,39 @@ describe("parsePersonioFeed", () => {
   it("throws when a non-empty feed yields zero parseable positions", () => {
     const xml = `<workzag-jobs><position><name>No Id</name></position></workzag-jobs>`;
     expect(() => parsePersonioFeed(xml, SOURCE)).toThrow();
+  });
+
+  it("flattens nested <office> elements inside additionalOffices without leaking tags", () => {
+    const xml = `<workzag-jobs>
+<position>
+    <id>10</id>
+    <office>Münster</office>
+    <additionalOffices>
+        <office>Münster</office>
+        <office>Remote Berlin</office>
+        <office>Hybrid</office>
+    </additionalOffices>
+    <name>Job</name>
+    <jobDescriptions></jobDescriptions>
+</position>
+</workzag-jobs>`;
+    const [job] = parsePersonioFeed(xml, SOURCE);
+    expect(job.locationText).toBe("Münster, Remote Berlin, Hybrid");
+    expect(job.locationText).not.toContain("<office>");
+  });
+
+  it("tolerates a flat additionalOffices text value", () => {
+    const xml = `<workzag-jobs>
+<position>
+    <id>11</id>
+    <office>Remote</office>
+    <additionalOffices>Berlin</additionalOffices>
+    <name>Job</name>
+    <jobDescriptions></jobDescriptions>
+</position>
+</workzag-jobs>`;
+    const [job] = parsePersonioFeed(xml, SOURCE);
+    expect(job.locationText).toBe("Remote, Berlin");
   });
 });
 

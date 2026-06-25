@@ -126,14 +126,49 @@ function stripSubtree(source: string, tag: string): string {
 }
 
 function buildLocationText(position: string): string | undefined {
-  const parts = [
-    getTagText(position, "office"),
-    getTagText(position, "additionalOffices"),
-  ].filter((value, index, values): value is string => {
-    if (!value) return false;
-    return values.indexOf(value) === index;
+  const seen = new Set<string>();
+  const parts = collectOffices(position).filter((office) => {
+    if (seen.has(office)) return false;
+    seen.add(office);
+    return true;
   });
   return parts.length > 0 ? parts.join(", ") : undefined;
+}
+
+// In the live feed `additionalOffices` is a container of nested `<office>`
+// elements (zero or more), not a flat text field. Collect the primary
+// `<office>` plus every office inside `<additionalOffices>`, in document
+// order. A flat `<additionalOffices>text</additionalOffices>` is tolerated
+// as a single value.
+function collectOffices(position: string): string[] {
+  const offices: string[] = [];
+
+  const primary = getFirstTagText(position, "office");
+  if (primary) offices.push(primary);
+
+  const container = extractBlocks(position, "additionalOffices")[0];
+  if (container !== undefined) {
+    const nested = extractBlocks(container, "office")
+      .map((value) => decodeEntities(stripCdata(value).trim()))
+      .filter((value) => value.length > 0);
+    if (nested.length > 0) {
+      offices.push(...nested);
+    } else {
+      const flat = decodeEntities(stripCdata(container).trim());
+      if (flat.length > 0) offices.push(flat);
+    }
+  }
+
+  return offices;
+}
+
+// Like getTagText, but explicitly the FIRST matching tag — used for the
+// top-level `<office>`, which precedes the `<additionalOffices>` block.
+function getFirstTagText(source: string, tag: string): string | undefined {
+  const value = extractBlocks(source, tag)[0];
+  if (value === undefined) return undefined;
+  const text = decodeEntities(stripCdata(value).trim());
+  return text.length > 0 ? text : undefined;
 }
 
 function buildDescriptionHtml(position: string): string {
