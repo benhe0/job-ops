@@ -1,0 +1,11 @@
+{
+  "name": "@career-boards/personio",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./personio-url": "./src/personio-url.ts",
+    "./personio-feed": "./src/personio-feed.ts"
+  }
+}
